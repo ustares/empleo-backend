@@ -1,46 +1,25 @@
-import os
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/')
-def home():
-    return jsonify({"status": "Backend Empleo FB activo ✅"})
+from datetime import datetime, timedelta
 
 @app.route('/search', methods=['POST'])
 def search_jobs():
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "Cuerpo JSON requerido"}), 400
-
     keyword = data.get('keyword', '').strip()
     country_code = data.get('country_code', '').strip()
+    date_filter = data.get('date_filter', 'all')  # ← NUEVO
 
-    if not keyword:
-        return jsonify({"error": "keyword es requerido"}), 400
+    # Lógica de filtro por fecha
+    now = datetime.now()
+    if date_filter == 'today':
+        since = now - timedelta(days=1)
+    elif date_filter == 'week':
+        since = now - timedelta(weeks=1)
+    elif date_filter == 'month':
+        since = now - timedelta(days=30)
+    else:
+        since = None  # "all" = sin filtro
 
-    results = [
-        {
-            "title": f"Desarrollador {keyword} - Remoto",
-            "description": f"Buscamos profesional de {keyword} con experiencia mínima de 2 años.",
-            "location": country_code,
-            "url": "https://www.facebook.com/groups/empleos.tech",
-            "source_group": "Empleos Tech Latinoamérica"
-        },
-        {
-            "title": f"{keyword} Senior - Trabajo desde casa",
-            "description": "Excelente oportunidad para trabajar en equipo internacional.",
-            "location": f"Remoto - {country_code}",
-            "url": "https://www.facebook.com/groups/trabajoremoto",
-            "source_group": "Trabajo Remoto Hispano"
-        }
-    ]
+    # Aquí aplicas el filtro a tu fuente de datos
+    # Cada resultado debe incluir "published_at": "hace 2 horas"
+    results = [...]
 
     return jsonify({"results": results, "total": len(results)})
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
