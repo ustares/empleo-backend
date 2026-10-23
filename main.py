@@ -6,69 +6,61 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# ── Base de datos de prueba con fechas reales ─────────────────────────────────
-# (Aquí irán tus resultados reales de Facebook/Apify más adelante)
-MOCK_JOBS = [
-    {
-        "title": "Desarrollador Python - Remoto",
-        "description": "Buscamos dev Python con experiencia en Flask y APIs REST.",
-        "location": "Remoto",
-        "url": "https://www.facebook.com/groups/empleos1/posts/1",
-        "source_group": "Empleos Tech",
-        "published_at": (datetime.now() - timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Diseñador UX/UI Senior",
-        "description": "Empresa internacional busca diseñador con experiencia en Figma.",
-        "location": "Ciudad de México",
-        "url": "https://www.facebook.com/groups/empleos1/posts/2",
-        "source_group": "Diseño y Creatividad",
-        "published_at": (datetime.now() - timedelta(hours=5)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Community Manager - Media Jornada",
-        "description": "Se busca CM con experiencia en redes sociales y creación de contenido.",
-        "location": "España",
-        "url": "https://www.facebook.com/groups/empleos1/posts/3",
-        "source_group": "Empleos Marketing",
-        "published_at": (datetime.now() - timedelta(days=2)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Analista de Datos - Excel avanzado",
-        "description": "Empresa de retail necesita analista con Python y Power BI.",
-        "location": "Colombia",
-        "url": "https://www.facebook.com/groups/empleos1/posts/4",
-        "source_group": "Empleos Data",
-        "published_at": (datetime.now() - timedelta(days=4)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Desarrollador Android Kotlin",
-        "description": "Startup fintech busca dev Android con Jetpack Compose.",
-        "location": "Argentina",
-        "url": "https://www.facebook.com/groups/empleos1/posts/5",
-        "source_group": "Empleos Tech",
-        "published_at": (datetime.now() - timedelta(days=8)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Contador / Administrador",
-        "description": "PYME busca contador con experiencia en facturación electrónica.",
-        "location": "Chile",
-        "url": "https://www.facebook.com/groups/empleos1/posts/6",
-        "source_group": "Empleos Finanzas",
-        "published_at": (datetime.now() - timedelta(days=20)).strftime("%d/%m/%Y %H:%M")
-    },
-    {
-        "title": "Instructor de Idiomas Online",
-        "description": "Academia busca profesores de inglés y francés para clases virtuales.",
-        "location": "Remoto",
-        "url": "https://www.facebook.com/groups/empleos1/posts/7",
-        "source_group": "Empleos Educación",
-        "published_at": (datetime.now() - timedelta(days=35)).strftime("%d/%m/%Y %H:%M")
-    },
-]
+def make_jobs(keyword, country_code):
+    """Genera resultados de prueba dinámicos basados en la búsqueda."""
+    now = datetime.now()
+    return [
+        {
+            "title": f"{keyword.title()} Junior - Trabajo Remoto",
+            "description": f"Empresa busca perfil de {keyword} con 1 año de experiencia mínimo. Excelente ambiente laboral y salario competitivo.",
+            "location": f"Remoto — {country_code}",
+            "url": "https://www.facebook.com/groups/empleos.tech/posts/1001",
+            "source_group": "Empleos Tech Latinoamérica",
+            "published_at": (now - timedelta(hours=3)).strftime("%d/%m/%Y %H:%M")
+        },
+        {
+            "title": f"{keyword.title()} Senior - Tiempo completo",
+            "description": f"Startup fintech necesita {keyword} con experiencia en equipos ágiles. Trabajo híbrido disponible.",
+            "location": f"Ciudad principal — {country_code}",
+            "url": "https://www.facebook.com/groups/empleos.tech/posts/1002",
+            "source_group": "Trabajo Remoto Hispano",
+            "published_at": (now - timedelta(hours=10)).strftime("%d/%m/%Y %H:%M")
+        },
+        {
+            "title": f"Freelance {keyword.title()} — Proyecto 3 meses",
+            "description": f"Proyecto de corta duración para {keyword}. Pago por horas, totalmente online.",
+            "location": f"Online — {country_code}",
+            "url": "https://www.facebook.com/groups/freelance.hispano/posts/2001",
+            "source_group": "Freelancers Hispanos",
+            "published_at": (now - timedelta(days=3)).strftime("%d/%m/%Y %H:%M")
+        },
+        {
+            "title": f"Prácticas / Pasantía — {keyword.title()}",
+            "description": f"Empresa líder ofrece prácticas remuneradas para estudiantes de {keyword}. Posibilidad de contratación.",
+            "location": f"{country_code}",
+            "url": "https://www.facebook.com/groups/practicas.trabajo/posts/3001",
+            "source_group": "Prácticas y Pasantías",
+            "published_at": (now - timedelta(days=6)).strftime("%d/%m/%Y %H:%M")
+        },
+        {
+            "title": f"Director de {keyword.title()} — Empresa consolidada",
+            "description": f"Posición de liderazgo para experto en {keyword} con más de 5 años de experiencia.",
+            "location": f"Presencial — {country_code}",
+            "url": "https://www.facebook.com/groups/empleos.directivos/posts/4001",
+            "source_group": "Empleos Directivos",
+            "published_at": (now - timedelta(days=12)).strftime("%d/%m/%Y %H:%M")
+        },
+        {
+            "title": f"Media jornada — {keyword.title()}",
+            "description": f"ONG busca voluntario/colaborador part-time con conocimientos en {keyword}.",
+            "location": f"Remoto — {country_code}",
+            "url": "https://www.facebook.com/groups/empleos.sociales/posts/5001",
+            "source_group": "Empleos Sociales",
+            "published_at": (now - timedelta(days=25)).strftime("%d/%m/%Y %H:%M")
+        },
+    ]
 
 def get_cutoff_date(date_filter: str):
-    """Retorna la fecha mínima según el filtro seleccionado."""
     now = datetime.now()
     if date_filter == "today":
         return now - timedelta(days=1)
@@ -76,12 +68,11 @@ def get_cutoff_date(date_filter: str):
         return now - timedelta(weeks=1)
     elif date_filter == "month":
         return now - timedelta(days=30)
-    else:
-        return None  # "all" — sin límite
+    return None  # "all"
 
 @app.route('/')
 def home():
-    return jsonify({"status": "Backend Empleo FB activo ✅", "version": "2.0"})
+    return jsonify({"status": "Backend Empleo FB activo ✅", "version": "3.0"})
 
 @app.route('/search', methods=['POST'])
 def search_jobs():
@@ -89,44 +80,32 @@ def search_jobs():
     if not data:
         return jsonify({"error": "Cuerpo JSON requerido"}), 400
 
-    keyword     = data.get('keyword', '').strip().lower()
-    country_code = data.get('country_code', '').strip().upper()
-    date_filter = data.get('date_filter', 'all').strip().lower()
+    keyword      = data.get('keyword', '').strip()
+    country_code = data.get('country_code', 'ES').strip().upper()
+    date_filter  = data.get('date_filter', 'all').strip().lower()
 
     if not keyword:
         return jsonify({"error": "keyword es requerido"}), 400
 
-    cutoff = get_cutoff_date(date_filter)
+    # Generar resultados dinámicos para la keyword buscada
+    all_jobs = make_jobs(keyword, country_code)
 
-    results = []
-    for job in MOCK_JOBS:
-        # ── Filtro por fecha ───────────────────────────────────────────────────
-        if cutoff is not None:
+    # Aplicar filtro de fecha
+    cutoff = get_cutoff_date(date_filter)
+    if cutoff is not None:
+        filtered = []
+        for job in all_jobs:
             try:
                 job_date = datetime.strptime(job["published_at"], "%d/%m/%Y %H:%M")
-                if job_date < cutoff:
-                    continue  # Oferta demasiado antigua, la omitimos
+                if job_date >= cutoff:
+                    filtered.append(job)
             except ValueError:
-                pass  # Si el formato de fecha falla, incluimos la oferta
-
-        # ── Filtro por keyword (título o descripción) ──────────────────────────
-        title_match = keyword in job["title"].lower()
-        desc_match  = keyword in job["description"].lower()
-        group_match = keyword in job["source_group"].lower()
-
-        if not (title_match or desc_match or group_match):
-            continue
-
-        results.append(job)
+                filtered.append(job)
+        all_jobs = filtered
 
     return jsonify({
-        "results": results,
-        "total": len(results),
-        "filters_applied": {
-            "keyword": keyword,
-            "country_code": country_code,
-            "date_filter": date_filter
-        }
+        "results": all_jobs,
+        "total": len(all_jobs)
     })
 
 if __name__ == '__main__':
