@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -11,7 +13,6 @@ def home():
 @app.route('/search', methods=['POST'])
 def search_jobs():
     data = request.get_json()
-
     if not data:
         return jsonify({"error": "Cuerpo JSON requerido"}), 400
 
@@ -21,13 +22,11 @@ def search_jobs():
     if not keyword:
         return jsonify({"error": "keyword es requerido"}), 400
 
-    # ── Aquí irá tu lógica real (Apify, scraping, DB, etc.) ──
-    # Por ahora devuelve datos de ejemplo
     results = [
         {
             "title": f"Desarrollador {keyword} - Remoto",
             "description": f"Buscamos profesional de {keyword} con experiencia mínima de 2 años.",
-            "location": f"{country_code}",
+            "location": country_code,
             "url": "https://www.facebook.com/groups/empleos.tech",
             "source_group": "Empleos Tech Latinoamérica"
         },
@@ -43,4 +42,5 @@ def search_jobs():
     return jsonify({"results": results, "total": len(results)})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
